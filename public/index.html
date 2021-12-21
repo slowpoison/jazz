@@ -33,40 +33,39 @@
 			.attr("transform",
 						"translate(" + margin.left + "," + margin.top + ")");
 
-	//Read the data
-	d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered_comma.csv").then(
+//Read the data
+d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered_comma.csv").then(
     function(data) {
-      console.log('data', data.map(d => d.date));
 
-			// Add X axis -> it is a date format
-			var xScale = d3.scaleTime()
-				.domain(d3.extent(data, d => new Date(d.date)))
-				.range([0, width]);
-			svg.append("g")
-				.attr("transform", "translate(0," + height + ")")
-				.call(d3.axisBottom(xScale));
+        // Add X axis -> it is a date format
+        var xScale = d3.scaleTime()
+        .domain(d3.extent(data, d => new Date(d.date)))
+        .range([0, width]);
+        svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(xScale));
 
-			// Add Y axis
-			var yScale = d3.scaleLinear()
-				.domain([0, d3.max(data, d => +d.value)])
-				.range([height, 0]);
-			svg.append("g")
-				.call(d3.axisLeft(yScale));
+        // Add Y axis
+        var yScale = d3.scaleLinear()
+        .domain([0, d3.max(data, d => +d.value)])
+        .range([height, 0]);
+        svg.append("g")
+        .call(d3.axisLeft(yScale));
 
-      data.forEach(d => console.log(xScale(d.date), yScale(d.value)));
+        data.forEach(d => console.log(xScale(d.date), yScale(d.value)));
 
-			// Add the line
-			svg.append("path")
-				.datum(data)
-				.attr("fill", "none")
-				.attr("stroke", "steelblue")
-				.attr("stroke-width", 1.5)
-				.attr("d",
-          d3.line()
-            .x(d => xScale(new Date(d.date)))
-            .y(d => yScale(+d.value)))
+        // Add the line
+        svg.append("path")
+            .datum(data)
+            .attr("fill", "none")
+            .attr("stroke", "steelblue")
+            .attr("stroke-width", 1.5)
+            .attr("d",
+                    d3.line()
+                    .x(d => xScale(new Date(d.date)))
+                    .y(d => yScale(+d.value)))
 
-	  })
+        })
 	</script>
   </body>
 </html>
