@@ -6,8 +6,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "run" : "node server.cjs"
-
+    "run": "node server.cjs"
   },
   "keywords": [
     "dashboard",
@@ -21,6 +20,7 @@
     "d3-node": "^2.2.3",
     "fastify": "^3.24.0",
     "fastify-static": "^4.5.0",
-    "jsdom": "^18.0.0"
+    "jsdom": "^18.0.0",
+    "node-fetch": "^3.1.0"
   }
 }
