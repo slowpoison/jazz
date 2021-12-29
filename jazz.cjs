@@ -4,27 +4,21 @@
  * Main Jazz class
  * Copyright(c) 2021, Vishal Verma <vish@slowpoison.net>
  */
-const D3Node = require('slowpoison-d3-node');
 const jsdom = require('jsdom');
 const { JSDOM } = jsdom;
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-
-globalThis.document = new JSDOM('<!DOCTYPE html>').window.document;
-
 if (!globalThis.fetch) {
     globalThis.fetch = fetch;
     //globalThis.Headers = Headers;
     //globalThis.Request = Request;
     //globalThis.Response = Response;
 }
+globalThis.document = new JSDOM('<!DOCTYPE html>').window.document;
 
-const options = {
-  selector: '#jazz',
-  container: '<div id="container"><div id="jazz"></div></div>'
-};
-const d3n = new D3Node(options); // initializes D3 with container element
-const d3 = d3n.d3;
-globalThis.d3 = d3;
+
+var d3 = import('d3')
+  .then(module => d3 = globalThis.d3 = module);
+const D3Node = require('slowpoison-d3-node');
 
 // Load all Jazz Modules
 const Mods = {};
@@ -35,20 +29,46 @@ var margin = {top: 10, right: 30, bottom: 30, left: 60},
 		width = 460 - margin.left - margin.right,
 		height = 400 - margin.top - margin.bottom;
 
-/*
-var svg = d3n.createSVG()
-		.attr("width", width + margin.left + margin.right)
-		.attr("height", height + margin.top + margin.bottom)
-	.append("g")
-		.attr("transform",
-					"translate(" + margin.left + "," + margin.top + ")");
-          */
 
 class Jazz {
-  async genChart() {
-    /*
-    var lineChart = await d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered_comma.csv").then(
+  async #init() {
+    var d3nOptions = {
+      d3Module: await d3,
+      selector: '#jazz',
+      container: '<html><head></head><body><div id="container"><div id="jazz"></div></div></body></html>'
+    };
+    this.d3n = new D3Node(d3nOptions); // initializes D3 with container element
+  }
+
+  constructor() {
+    this.#init();
+  }
+
+  async genDash() {
+    var charts = this.#getCharts();
+    await Promise.all(charts);
+    console.log(this.d3n.html());
+    return this.d3n.html();
+  }
+
+  #getCharts() {
+    var charts = [];
+    charts.push(this.#lineChart());
+    charts.push(this.#pieChart());
+
+    return charts;
+  }
+
+  #lineChart() {
+    var svg = this.d3n.createSVG()
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+    return d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered_comma.csv").then(
         function(data) {
+        console.log('data.size', Object.keys(data).length);
 
         // Add X axis -> it is a date format
         var xScale = d3.scaleTime()
@@ -74,12 +94,11 @@ class Jazz {
           strokeWidth: 1.5
         };
         component.get(svg, dataObject, style);
-
-        //console.log(d3n.svgString())
         });
-        */
+  }
 
-    var svgPie = d3n.createSVG()
+  #pieChart() {
+    var svg = this.d3n.createSVG()
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
       .append("g")
@@ -96,10 +115,8 @@ class Jazz {
           strokeWidth: 1.5
         };
     var dataObject = createDataObject(pieData);
-    component.get(svgPie, dataObject, style);
-
-    console.log(d3n.svgStrings())
-    return d3n.svgStrings().join('');
+    component.get(svg, dataObject, style);
+    return Promise.resolve(undefined); // nothing to return really
   }
 }
 

@@ -1,6 +1,5 @@
 {
   "name": "jazz",
-  "type": "module",
   "version": "0.0.1",
   "description": "Jazzed up dashboards",
   "main": "index.js",

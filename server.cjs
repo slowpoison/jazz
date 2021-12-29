@@ -9,19 +9,11 @@ fastify.register(require('fastify-static'), {
     prefix: '/public/',
     })
 
-fastify.get('/jazz/test.svg', async (req, reply) => {
-    try {
-      reply
-        .type('image/svg+xml')
-        .send(await jazz.genChart())
-        //.send('<svg xmlns="http://www.w3.org/2000/svg" height="100" width="100"><circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red"/></svg>')
-    } catch (e) {
-      console.log(e)
+fastify.get('/jazz/dash.html', async (req, reply) => {
       reply
         .type('text/html')
-        .send(e.toString())
-    }
-    });
+        .send(await jazz.genDash())
+    })
 
 fastify.listen(3000, '0.0.0.0', (err, address) => {
     if (err) throw err
