@@ -4,7 +4,7 @@
  * Main Jazz class
  * Copyright(c) 2021, Vishal Verma <vish@slowpoison.net>
  */
-const D3Node = require('d3-node');
+const D3Node = require('slowpoison-d3-node');
 const jsdom = require('jsdom');
 const { JSDOM } = jsdom;
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
@@ -19,8 +19,8 @@ if (!globalThis.fetch) {
 }
 
 const options = {
-  selector: '#chart',
-  container: '<div id="container"><div id="chart"></div></div>'
+  selector: '#jazz',
+  container: '<div id="container"><div id="jazz"></div></div>'
 };
 const d3n = new D3Node(options); // initializes D3 with container element
 const d3 = d3n.d3;
@@ -35,16 +35,19 @@ var margin = {top: 10, right: 30, bottom: 30, left: 60},
 		width = 460 - margin.left - margin.right,
 		height = 400 - margin.top - margin.bottom;
 
+/*
 var svg = d3n.createSVG()
 		.attr("width", width + margin.left + margin.right)
 		.attr("height", height + margin.top + margin.bottom)
 	.append("g")
 		.attr("transform",
 					"translate(" + margin.left + "," + margin.top + ")");
+          */
 
 class Jazz {
   async genChart() {
-    return await d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered_comma.csv").then(
+    /*
+    var lineChart = await d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered_comma.csv").then(
         function(data) {
 
         // Add X axis -> it is a date format
@@ -62,18 +65,41 @@ class Jazz {
         svg.append("g")
           .call(d3.axisLeft(yScale));
 
+        var dataObject = createDataObject(data, xScale, yScale);
+
         var component = new Mods['LineChart'](this);
         var style = {
           fill: 'none',
           strokeColor: 'steelblue',
           strokeWidth: 1.5
         };
-        console.log('yScale', yScale);
-        component.get(svg, data, style, xScale, yScale);
+        component.get(svg, dataObject, style);
 
-        console.log(d3n.svgString())
-        return d3n.svgString()
+        //console.log(d3n.svgString())
         });
+        */
+
+    var svgPie = d3n.createSVG()
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform",
+          "translate(" + (width / 2 + margin.left) + "," + (height / 2 + margin.top) + ")");
+
+    // generate pie-chart. TODO create parallely with line chart? :)
+    var pieData = {BTC: 50, ETH: 40, LTC: 10};
+    var component = new Mods['PieChart'](this);
+    var style = {
+          fill: 'none',
+          strokeColor: 'steelblue',
+          radius: Math.min(width, height) / 2 - 10,
+          strokeWidth: 1.5
+        };
+    var dataObject = createDataObject(pieData);
+    component.get(svgPie, dataObject, style);
+
+    console.log(d3n.svgStrings())
+    return d3n.svgStrings().join('');
   }
 }
 
@@ -88,6 +114,28 @@ function loadJazzModules() {
           throw new Error(`Module ${m.name} already exists`);
         Mods[m.name] = m;
     });
+}
+
+function createDataObject(data, xScale, yScale) {
+  var dataObject = {
+    data: data,
+    defaultComponent: function() { return data; }
+  };
+
+  if (xScale != null) {
+    dataObject.xComponent = function() {
+      return d => xScale(new Date(d.date));
+    };
+  }
+
+  if (yScale != null) {
+    dataObject.yComponent = function() {
+      return d => yScale(+d.value);
+    };
+    dataObject.defaultComponent = dataObject.yComponent;
+  }
+
+  return dataObject;
 }
 
 module.exports = Jazz;
