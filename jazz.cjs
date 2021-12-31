@@ -31,7 +31,9 @@ var margin = {top: 10, right: 30, bottom: 30, left: 60},
 
 
 class Jazz {
-  async #init() {
+  async #genInit() {
+    this.elements = [];
+
     var d3nOptions = {
       d3Module: await d3,
       selector: '#jazz',
@@ -41,25 +43,68 @@ class Jazz {
   }
 
   constructor() {
-    this.#init();
+    this.ready = new Promise((resolve, reject) => {
+      this.#genInit().then(async () => {
+        // XXX could be wrong about this
+        this.elements = await this.#genBuildElements()
+        resolve()
+        })
+      })
+  }
+
+  async #genBuildElements() {
+    return await Promise.all([this.#genLineChartElement(), this.#genPieChartElement()])
+  }
+
+  async #genDocument() {
+    var [styleUrl, ...elementUrls] = await Promise.all([
+        this.#genStyleUrl(),
+        ...this.elements.map(e => e.genUrl())])
+
+    return {
+      styleUrl: styleUrl,
+      elementUrls: elementUrls
+    };
+  }
+
+  async #genStyleUrl() {
+    // TODO change to dynamic one
+    return '/jazz/s/jazz-style.css';
+  }
+
+  async #genLayout() {
+    // XXX bogus
+    var simpleLayout = '';
+    return simpleLayout;
   }
 
   async genDash() {
-    var charts = this.#getCharts();
-    await Promise.all(charts);
-    console.log(this.d3n.html());
-    return this.d3n.html();
+    // TODO remember that this could already be existing and we're just returning
+    // a copy
+    return this.ready.then(() => this.#genDocument());
   }
 
-  #getCharts() {
-    var charts = [];
-    charts.push(this.#lineChart());
-    charts.push(this.#pieChart());
+  async genElementSvg(element) {
+    var component = null
+    if (element.endsWith('line-chart.svg')) {
+      component = await this.#genLineChart()
+    } else if (element.endsWith('pie-chart.svg')) {
+      component = await this.#genPieChart()
+    }
 
-    return charts;
+    return this.d3n.svgString()
   }
 
-  #lineChart() {
+  async #genLineChartElement() {
+    return new Mods['LineChart'](this);
+  }
+
+  async #genPieChartElement() {
+    return new Mods['PieChart'](this);
+  }
+
+  async #genLineChart() {
+    await this.ready
     var svg = this.d3n.createSVG()
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
@@ -68,7 +113,6 @@ class Jazz {
           "translate(" + margin.left + "," + margin.top + ")");
     return d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered_comma.csv").then(
         function(data) {
-        console.log('data.size', Object.keys(data).length);
 
         // Add X axis -> it is a date format
         var xScale = d3.scaleTime()
@@ -94,10 +138,12 @@ class Jazz {
           strokeWidth: 1.5
         };
         component.get(svg, dataObject, style);
+        return component;
         });
   }
 
-  #pieChart() {
+  async #genPieChart() {
+    await this.ready
     var svg = this.d3n.createSVG()
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
@@ -116,7 +162,7 @@ class Jazz {
         };
     var dataObject = createDataObject(pieData);
     component.get(svg, dataObject, style);
-    return Promise.resolve(undefined); // nothing to return really
+    return component;
   }
 }
 

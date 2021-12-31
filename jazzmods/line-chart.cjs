@@ -1,5 +1,8 @@
 const Chart = require('./chart.cjs');
 class LineChart extends Chart {
+  async genUrl() {
+    return '/jazz/e/line-chart.svg'
+  }
 
   get(svg, dataObject, style) {
     return svg.append('path')

@@ -1,5 +1,8 @@
 const Chart = require('./chart.cjs');
 class PieChart extends Chart {
+  async genUrl() {
+    return '/jazz/e/pie-chart.svg'
+  }
 
   get(svg, dataObject, style) {
     var pie = d3.pie().value(d => d[1]);
