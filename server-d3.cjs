@@ -14,22 +14,9 @@ if (!globalThis.fetch) {
     //globalThis.Response = Response;
 }
 
-//const d3n = new D3Node();
-//d3n.createSVG(10, 20).append('g');
-//console.log(d3n.svgString());
-
 const options = { selector: '#chart', container: '<div id="container"><div id="chart"></div></div>' }
 const d3n = new D3Node(options) // initializes D3 with container element
 const d3 = d3n.d3
-
-const canvasModule = require('canvas');
-const d3nc = new D3Node({canvasModule});
-const canvas = d3n.createCanvas(960, 500);
-const context = canvas.getContext('2d');
-canvas.pngStream().pipe(fs.createWrite
-//d3.select(d3n.document.querySelector('#chart')).append('span') // insert span tag into #chart
-//console.log(d3n.html())   // output: <html><body><div id="container"><div id="chart"><span></span></div></div></body></html>
-//console.log(d3n.chartHTML())  // output: <div id="chart"><span></span></div>
 
 // set the dimensions and margins of the graph
 var margin = {top: 10, right: 30, bottom: 30, left: 60},
@@ -76,6 +63,6 @@ d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_data
                     .x(d => xScale(new Date(d.date)))
                     .y(d => yScale(+d.value)))
 
-				//console.log(d3n.html());
+				console.log(d3n.html());
 
         })

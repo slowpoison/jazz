@@ -1,7 +1,8 @@
 const Chart = require('./chart.cjs');
 class PieChart extends Chart {
   async genUrl() {
-    return '/jazz/e/pie-chart.svg'
+    // FIXME make dynamic
+    return '/jazz/p/net.slowpoison.jazz.test/e/PieChart/1.svg';
   }
 
   get(svg, dataObject, style) {

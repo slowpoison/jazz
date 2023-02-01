@@ -1,9 +1,23 @@
-<!--
+/*
  * dash.css
  *
  * Dash styles
  *
- * Copyright (c), 2021, Vishal Verma <vish@slowpoison.net>
--->
+ * Copyright (c), 2021 Vishal Verma <vish@slowpoison.net>
+*/
 <style>
+  .chart {
+		margin: 10px 30px 30px 60px;
+		width: 400px;
+		height: 390px;
+  }
+
+  .net.slowpoison.jazz.lineChart {
+    transform: translate(60px, 10px);
+  }
+
+  .net.slowpoison.jazz.pieChart {
+    transfomr: translate(260px, 205px);
+  }
+
 </style>
