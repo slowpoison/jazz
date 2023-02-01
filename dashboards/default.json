@@ -1,0 +1,6 @@
+{
+    "style": "/jazz/s/default.css",
+    "jazzMods": [
+        "net.slowpoison.jazz.test.Bitcoin"
+    ]
+}

@@ -1,10 +1,21 @@
+/*
+ * line-chart.jazzwidget.cjs
+ *
+ * Line chart implementation
+ * Copyright(c) 2021-23, Vishal Verma <vish@slowpoison.net>
+ */
+
 const Chart = require('./chart.cjs');
 class LineChart extends Chart {
-  async genUrl() {
-    return '/jazz/e/line-chart.svg'
+  constructor() {
+    super();
   }
 
-  get(svg, dataObject, style) {
+  async genUrl() {
+    return '/jazz/p/net.slowpoison.jazz.test/e/LineChart/1.svg';
+  }
+
+  async #genAddToSvgImpl(svg, dataObject, style) {
     return svg.append('path')
       .datum(dataObject.data)
       // TODO probably could apply styles automatically
