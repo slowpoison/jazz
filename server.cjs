@@ -22,12 +22,6 @@ fastify.get('/README.md', (req, reply) => {
     .send(md.render(fs.readFileSync('README.md').toString()))
   });
 
-fastify.get('/public/bitcoin.svg', (req, reply) => {
-  reply
-    .type('image/svg+xml')
-    .send(fs.readFileSync('public/bitcoin.svg'));
-  });
-
 fastify.register(require('@fastify/static'), {
     root: path.join(__dirname, 'public'),
     prefix: '/public/',
