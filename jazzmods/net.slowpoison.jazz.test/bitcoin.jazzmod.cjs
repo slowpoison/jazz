@@ -11,19 +11,12 @@ const CSVDataSource = require.main.require('./data-sources/csv-data-source.cjs')
 class Bitcoin extends JazzMod {
   constructor(jazz, pkgName) {
     super(jazz, pkgName);
-    this.dataSource = new CSVDataSource();
+    this.dataSource = new CSVDataSource(
+      "https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered_comma.csv");
   }
 
-  async genSvg() {
+  async genFillSvg(svg) {
     var thisMod = this;
-    var svg =  d3.create('svg');
-    svg
-      .attr("xmlns", "http://www.w3.org/2000/svg")
-      .attr("width", this.width + this.margin.left + this.margin.right)
-      .attr("height", this.height + this.margin.top + this.margin.bottom)
-      .append("g")
-      .attr("transform",
-        "translate(" + this.margin.left + "," + this.margin.top + ")");
 
     await d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered_comma.csv")
       .then(function (data) {
