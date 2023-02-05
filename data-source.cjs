@@ -52,6 +52,11 @@ class DataSource {
 
   static #loadFromSource(type, source) {
   }
+
+  onData(onDataCallback) {
+    d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered_comma.csv")
+      .then(data => onDataCallback(data));
+  }
 }
 
 module.exports = DataSource;
