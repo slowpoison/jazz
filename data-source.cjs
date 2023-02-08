@@ -15,7 +15,8 @@ class DataSource {
   }
 
   /**
-   * Loads the data from the cache or from the source
+   * Loads the data from the cache or from the source. Loading the data source 
+   * doesn't mean all the data is loaded. It just means the data source is ready.
    */
   async #genLoad() {
     if (!await this.#genLoadFromCache()) {

@@ -19,7 +19,7 @@ class JazzMod {
   }
   async genSvg() {
     var svg =  d3.create('svg');
-    svg
+    var g = svg
       .attr("xmlns", "http://www.w3.org/2000/svg")
       // TODO width comes from dash
       .attr("width", this.width + this.margin.left + this.margin.right)
@@ -27,8 +27,12 @@ class JazzMod {
       .append("g")
       .attr("transform",
         "translate(" + this.margin.left + "," + this.margin.top + ")");
-    this.genFillSvg(svg);
+    await this.genFillSvg(g);
     return svg;
+  }
+
+  async genFillSvg(svg) {
+    Logger.error(`genFillSvg not implemented for ${this.classRef}`);
   }
 
   async genUrl() {
