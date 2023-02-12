@@ -24,11 +24,10 @@ class CSVDataSource extends DataSource {
     return(res.body);
   }
 
-  async #genLoadCSV() {
+  async genDataObject(dataRef) {
     const csv = require('csvtojson');
-    const csvFilePath = this.source;
-    const jsonArray = await csv().fromFile(csvFilePath);
-    return jsonArray;
+    return await csv()
+      .fromString(await this.genDataBuffer());
   }
 
   static async #genLoadCSVFromURL(url) {

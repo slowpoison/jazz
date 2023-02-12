@@ -15,6 +15,11 @@ class JazzDataSourcesLoader {
   static DataSources = {};
   static DataSourceAccessors = {};
 
+  static getDataSourceAccessor(name) {
+    // TODO load on demand
+    return this.DataSourceAccessors[name];
+  }
+
   static async genLoadDataSources() {
     var dataSourceAccessors = await Fs.readdir(JAZZ_DATA_SOURCE_ACCESSORS_DIR);
     await Promise.all(
@@ -36,6 +41,7 @@ class JazzDataSourcesLoader {
     if (name == null) {
       Logger.throwError(`Invalid data source accessor name {dsaFile}`);
     }
+    name = name.toUpperCase();
 
     if (JazzDataSourcesLoader.DataSourceAccessors[name] == undefined) {
       try {
@@ -49,8 +55,8 @@ class JazzDataSourcesLoader {
     }
   }
 
-  static async #genLoadDataSource(dsFile) {
-    var type = dsFile.split('-')[0];
+  static async #genLoadDataSource(dsSourceFileName) {
+    var type = dsSourceFileName.split('-')[0];
     if (type == null) {
       Logger.throwError(`Invalid data source name {dsFile}`);
     }
@@ -58,7 +64,7 @@ class JazzDataSourcesLoader {
     if (JazzDataSourcesLoader.DataSources[type] == undefined) {
       try {
         JazzDataSourcesLoader.DataSources[type] =
-         require(Path.join(JAZZ_DATA_SOURCES_DIR, dsFile));
+         require(Path.join(JAZZ_DATA_SOURCES_DIR, dsSourceFileName));
       } catch (e) {
         Logger.error(`Couldn't load data source`, e);
         return;

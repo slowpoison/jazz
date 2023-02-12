@@ -17,12 +17,7 @@ class Bitcoin extends JazzMod {
   }
 
   async genFillSvg(svg) {
-    await AsyncUtils.callbackToPromise(
-      this.dataSource.onData,
-      async (data) => await this.genFillSvgFromData(svg, data));
-  }
-
-  async genFillSvgFromData(svg, data) {
+    var data = await this.dataSource.genDataObject();
     // Add X axis -> it is a date format
     var xScale = d3.scaleTime()
       .domain(d3.extent(data, d => new Date(d.date)))

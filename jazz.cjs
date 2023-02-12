@@ -29,6 +29,7 @@ const JazzDashesLoader = require('./jazz-dashes-loader.cjs');
 class Jazz {
   // returns a promise with all pending work
   async #genInit() {
+    // FIXME load data sources and widgets on demand
     var loadDataSources = JazzDataSourcesLoader.genLoadDataSources();
     var loadWidgets = JazzWidgetsLoader.genLoadWidgets();
     // JazzMods are a confluence of DataSources and Widgets, so are loaded after both 

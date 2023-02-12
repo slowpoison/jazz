@@ -19,7 +19,7 @@ class JazzMod {
   }
   async genSvg() {
     var svg =  d3.create('svg');
-    var g = svg
+    svg
       .attr("xmlns", "http://www.w3.org/2000/svg")
       // TODO width comes from dash
       .attr("width", this.width + this.margin.left + this.margin.right)
@@ -27,7 +27,7 @@ class JazzMod {
       .append("g")
       .attr("transform",
         "translate(" + this.margin.left + "," + this.margin.top + ")");
-    await this.genFillSvg(g);
+    await this.genFillSvg(svg);
     return svg;
   }
 
