@@ -46,10 +46,10 @@ class JazzModsLoader {
       // remove everything before the last slash
       modName = modName.substring(0, modName.indexOf('/'));
     }
-    Logger.debug(`canonicalModName: ${pkgName}.${modName}`);
     return pkgName.concat(`.${modName}`);
   }
 
+  // FIXME chagne to getJazzMod and let the caller call genSvg
   static async genJazzModSvg(dashId, jazzModRef) {
     var [pkgName, modName] = JazzModsLoader.#pkgAndModNameFromRef(jazzModRef);
     var key = JazzModsLoader.#canonicalModName(pkgName, modName);

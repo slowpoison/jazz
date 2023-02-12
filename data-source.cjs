@@ -6,32 +6,64 @@
  * Copyright(c) 2021-23, Vishal Verma <vish@slowpoison.net>
  */
 
+const { DataSourceAccessors } = require('./jazz-data-sources-loader.cjs');
 const JazzDataSourcesLoader = require('./jazz-data-sources-loader.cjs');
 
 class DataSource {
-  static getSourceFor(dataSourceName) {
-    var dsType = DataSource.#getDataSourceTypeFromName(dataSourceName);
-    return JazzDataSourcesLoader.DataSources[type].load(source);
+  #sourceUrl;
+
+  constructor(sourceUrl) {
+    this.#sourceUrl = sourceUrl;
   }
 
   /**
-   * Loads the data from the cache or from the source
+   * @returns {String} the data formatted as a json string
    */
-  async #genLoad() {
-    if (!await this.#genLoadFromCache()) {
-      this.#loadFromSource();
+  async genDataBuffer() {
+    var data = await this.#genDataBufferFromCache();
+    if (data != null) {
+      return data;
     }
 
-    this.loaded = true;
+    return this.#genDataBufferFromSource();
   }
 
-  #genLoadFromCache() {
+  async #genDataBufferFromCache() {
+    // TODO implement this
+    return null;
+  }
+
+  async #genDataBufferFromSource() {
+    // find out accessor type
+    var accessorType = DataSource.#getAccessorTypeFromName(this.#sourceUrl);
+    if (accessorType == null) {
+      accessorType = 'FILE';
+    }
+
+    // download data
+    var accessor = JazzDataSourcesLoader.getDataSourceAccessor(accessorType);
+    var dataBuffer = await accessor.genGet(this.#sourceUrl);
+
+    return dataBuffer;
+  }
+
+
+  async #genLoad() {
+  }
+
+  async #genLoadFromCache() {
     // TODO implement this
     return false;
   }
 
+  async genDownloadSource() {
+    // download based on accessor?
+
+    // return content as a string
+  }
+
   #genLoadFromSource() {
-    this.ds = DataSource.loadFromSource(this.type, this.source);
+    this.ds = DataSource.#loadFromSource(this.type, this.source);
   }
 
   static #getDataSourceTypeFromName(dataSourceName) {
@@ -51,6 +83,27 @@ class DataSource {
   }
 
   static #loadFromSource(type, source) {
+  }
+
+  // FIXME tokenize the type (look for a colon) and then search in a map
+  static #getAccessorTypeFromName(dataSourceUrl) {
+    if (dataSourceUrl == null) {
+      return null;
+    }
+
+    if (typeof dataSourceUrl == 'string') {
+      if (dataSourceUrl.startsWith('https')) {
+        return 'HTTPS';
+      } else if (dataSourceUrl.startsWith('http')) {
+        return 'HTTP';
+      } else if (dataSourceUrl.startsWith('file')) {
+        return 'FILE';
+      }
+    }
+  }
+
+  onData(onDataCallback) {
+    this.genDataBuffer().then(data => onDataCallback(data));
   }
 }
 

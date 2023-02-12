@@ -21,28 +21,19 @@ globalThis.document = new JSDOM('<!DOCTYPE html>').window.document;
 
 var d3 = import('d3')
   .then(module => d3 = globalThis.d3 = module);
-const D3Node = require('slowpoison-d3-node');
 
 const JazzDataSourcesLoader = require('./jazz-data-sources-loader.cjs');
 const JazzWidgetsLoader = require('./jazz-widgets-loader.cjs');
 const JazzDashesLoader = require('./jazz-dashes-loader.cjs');
 
-// TODO only call other classes when D3N is ready
 class Jazz {
   // returns a promise with all pending work
   async #genInit() {
+    // FIXME load data sources and widgets on demand
     var loadDataSources = JazzDataSourcesLoader.genLoadDataSources();
     var loadWidgets = JazzWidgetsLoader.genLoadWidgets();
     // JazzMods are a confluence of DataSources and Widgets, so are loaded after both 
     //var loadJazzMods = JazzModsLoader.genLoadJazzMods();
-
-    var d3nOptions = {
-      d3Widgetule: await d3,
-      selector: '#jazz',
-      container: '<html><head></head><body><div id="container"><div id="jazz"></div></div></body></html>'
-    };
-    this.d3n = new D3Node(d3nOptions); // initializes D3 with container element
-    return Promise.all([loadDataSources, loadWidgets]);
   }
 
   constructor() {

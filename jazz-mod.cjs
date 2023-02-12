@@ -27,7 +27,12 @@ class JazzMod {
       .append("g")
       .attr("transform",
         "translate(" + this.margin.left + "," + this.margin.top + ")");
-    return await this.genFillSvg(svg);
+    await this.genFillSvg(svg);
+    return svg;
+  }
+
+  async genFillSvg(svg) {
+    Logger.error(`genFillSvg not implemented for ${this.classRef}`);
   }
 
   async genUrl() {
