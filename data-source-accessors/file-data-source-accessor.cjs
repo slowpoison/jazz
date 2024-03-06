@@ -8,8 +8,8 @@ const fs = require('fs');
 const DataSourceAccessor = require('../data-source-accessor.cjs');
 
 class FileDataSourceAccessor extends DataSourceAccessor {
-  async genGet(dataSourceName) {
-    return fs.readFileSync(dataSourceName);
+  async genGet(sourceSpec) {
+    return fs.readFileSync(sourceSpec.fileName);
   }
 }
 

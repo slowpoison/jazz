@@ -24,9 +24,10 @@ class CSVDataSource extends DataSource {
     return(res.body);
   }
 
-  async genDataObject(dataRef) {
+  async genDataObject() {
     const csv = require('csvtojson');
     return await csv()
+      // FIXME shouldn't this be fromBuffer?
       .fromString(await this.genDataBuffer());
   }
 

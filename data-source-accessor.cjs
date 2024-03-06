@@ -7,7 +7,7 @@
 const Logger = require('./logger.cjs');
 
 class DataSourceAccessor {
-  async genGet(url) {
+  async genGet(sourceSpec) {
     Logger.throwError('child class must implement genGet()')
   }
 }

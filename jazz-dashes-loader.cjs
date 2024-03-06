@@ -13,7 +13,6 @@ const JazzModsLoader = require('./jazz-mods-loader.cjs');
 
 const Dash = require('./dash.cjs');
 
-// TODO load jazzmods
 class JazzDashesLoader {
   static dashes = {};
 
@@ -29,14 +28,13 @@ class JazzDashesLoader {
         jazz, dashDefinition.jazzMods);
 
     var loadStyle = JazzStylesLoader.genLoadStyle(
-        jazz, dashDefinition.style);
+        jazz, dashDefinition.styleRef);
 
     var [jazzMods, style] = await Promise.all([loadMods, loadStyle]);
 
     this.dashes[dashId] =  new Dash(jazz, {
         dashId: dashId,
-        styleUrl: dashDefinition.styleUrl,
-        style: style,
+        styleRef: dashDefinition.styleRef,
         jazzModRefs: dashDefinition.jazzMods,
         jazzMods: jazzMods
         });

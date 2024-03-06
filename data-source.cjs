@@ -3,51 +3,55 @@
  *
  * Base class for Data Sources
  *
- * Copyright(c) 2021-23, Vishal Verma <vish@slowpoison.net>
+ * Copyright(c) 2021-24, Vishal Verma <vish@slowpoison.net>
  */
 
-const { DataSourceAccessors } = require('./jazz-data-sources-loader.cjs');
 const JazzDataSourcesLoader = require('./jazz-data-sources-loader.cjs');
 
 class DataSource {
-  #sourceUrl;
+  #sourceSpec;
 
-  constructor(sourceUrl) {
-    this.#sourceUrl = sourceUrl;
+  constructor(sourceSpec) {
+    this.#sourceSpec = sourceSpec;
   }
 
   /**
-   * @returns {String} the data formatted as a json string
+   * @returns {Buffer} the data buffer backing this data source
    */
-  async genDataBuffer() {
-    var data = await this.#genDataBufferFromCache();
+  async genDataBuffer(sourceSpec = null) {
+    if (sourceSpec == null) {
+      sourceSpec = this.#sourceSpec;
+    }
+
+    var data = await this.#genDataBufferFromCache(sourceSpec);
     if (data != null) {
       return data;
     }
 
-    return this.#genDataBufferFromSource();
+    return this.#genDataBufferFromSource(sourceSpec);
   }
 
-  async #genDataBufferFromCache() {
+  async #genDataBufferFromCache(source = null) {
     // TODO implement this
     return null;
   }
 
-  async #genDataBufferFromSource() {
+  async #genDataBufferFromSource(sourceSpec) {
     // find out accessor type
-    var accessorType = DataSource.#getAccessorTypeFromName(this.#sourceUrl);
+    var accessorType = DataSource.#getAccessorTypeFromName(sourceSpec);
     if (accessorType == null) {
       accessorType = 'FILE';
     }
 
     // download data
     var accessor = JazzDataSourcesLoader.getDataSourceAccessor(accessorType);
-    var dataBuffer = await accessor.genGet(this.#sourceUrl);
+    var dataBuffer = await accessor.genGet(sourceSpec);
 
     return dataBuffer;
   }
 
 
+  // TODO implement or remove this
   async #genLoad() {
   }
 
@@ -86,17 +90,18 @@ class DataSource {
   }
 
   // FIXME tokenize the type (look for a colon) and then search in a map
-  static #getAccessorTypeFromName(dataSourceUrl) {
-    if (dataSourceUrl == null) {
+  static #getAccessorTypeFromName(sourceSpec) {
+    var url = sourceSpec.url;
+    if (url == null) {
       return null;
     }
 
-    if (typeof dataSourceUrl == 'string') {
-      if (dataSourceUrl.startsWith('https')) {
+    if (typeof url == 'string') {
+      if (url.startsWith('https')) {
         return 'HTTPS';
-      } else if (dataSourceUrl.startsWith('http')) {
+      } else if (url.startsWith('http')) {
         return 'HTTP';
-      } else if (dataSourceUrl.startsWith('file')) {
+      } else if (url.startsWith('file')) {
         return 'FILE';
       }
     }

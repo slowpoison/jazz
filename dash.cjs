@@ -8,6 +8,8 @@
 
 const Logger = require('./logger.cjs').getLogger();
 
+const JazzRef = require('./jazz-ref.cjs');
+
 class Dash {
   constructor(jazz, dashObj) {
     this.jazz = jazz;
@@ -18,12 +20,13 @@ class Dash {
   async genToJson() {
     // TODO remember that this could already be existing and we're just returning
     // a copy
-    return {
+    var ret = {
       dashId: this.dashObj.dashId,
-      style: this.dashObj.styleUrl,
-      jazzMods: await Promise.all(
-          this.dashObj.jazzMods.map(async (m) => await m.genUrl()))
+      styleRef: this.dashObj.styleRef,
+      styleUrl: JazzRef.Style.makeUrl(this.dashObj.styleRef),
+      jazzMods: this.dashObj.jazzMods.map(m => m.url())
     };
+    return ret;
   }
 }
 

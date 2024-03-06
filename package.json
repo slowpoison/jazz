@@ -1,6 +1,6 @@
 {
   "name": "jazz",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Jazzed up dashboards",
   "main": "server.cjs",
   "scripts": {
@@ -15,16 +15,18 @@
   "author": "Vishal Verma <vish@slowpoison.net>",
   "license": "MIT",
   "dependencies": {
+    "@fastify/static": "^7.0",
+    "@fastify/swagger": "^7.0",
+    "@slowpoison/async-utils": "^0.0.3",
+    "csvtojson": "^2.0",
     "d3": "^7.8",
-    "eta": "^2.0",
-    "fastify": "^3.24.0",
-    "@fastify/static": "^5.0",
+    "eta": "^3.0",
+    "fastify": "^4.26.1",
     "fetch": "^1.1.0",
     "jsdom": "^18.0.0",
     "lodash": "^4.17.21",
     "markdown-it": "^12.3.0",
     "node-fetch": "^3.1.0",
-    "@slowpoison/async-utils": "^0.0.3",
-    "csvtojson": "^2.0"
+    "yaml": "^2.3.4"
   }
 }

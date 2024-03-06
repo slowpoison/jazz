@@ -12,8 +12,9 @@ const AsyncUtils = require.main.require('@slowpoison/async-utils');
 class Bitcoin extends JazzMod {
   constructor(jazz, pkgName) {
     super(jazz, pkgName);
-    this.dataSource = new CSVDataSource(
-      "https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered_comma.csv");
+    this.dataSource = new CSVDataSource({
+      url: 'https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered_comma.csv',
+      });
   }
 
   async genFillSvg(svg) {

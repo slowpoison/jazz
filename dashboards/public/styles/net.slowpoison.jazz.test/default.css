@@ -1,0 +1,11 @@
+/* 
+ * default.css
+ * Default CSS for the Jazz dashboard
+ * Copyright (c) 2024, Vishal Verma <vish@slowpoison.net>
+*/
+
+dash {
+  margin: 10px 30px 30px 60px;
+  width: 400;
+  height: 390;
+}

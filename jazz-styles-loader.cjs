@@ -5,18 +5,17 @@
  * Copyright(c) 2022, Vishal Verma <vish@slowpoison.net>
  */
 
+const Fs = require('fs/promises');
 class JazzStylesLoader {
   static async genLoadStyle(jazz, style) {
-    // FIXME
-    return {
-      margin: {
-        top: 10,
-        right: 30,
-        bottom: 30,
-        left: 60 },
-      width: 400,
-      height: 390
-    };
+    return 
+      Fs.readFile(path.join(__dirname, 'dashboards', 'public', 'styles', style), (err, data) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(data.toString());
+        }
+      })
   }
 }
 

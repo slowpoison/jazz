@@ -7,6 +7,7 @@
  *
  * Copyright (c), 2021-23, Vishal Verma <vish@slowpoison.net>
 -->
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>Jazz</title>
@@ -15,9 +16,8 @@
   </head>
   <body>
   <h1>Jazz</h1>
-  <!-- output bitcoin.svg -->
-  <% it.dash.jazzMods.forEach(jmUrl => { %>
-  <object type="image/svg+xml" data="<%= jmUrl %>"></object>
-  <% }) %>
+  <% for await (const jmId of it.dash.jazzMods) { %>
+  <object type="image/svg+xml" data="<%= await it.jazz.genJazzModUrl(jmId) %>"></object>
+  <% } %>
   </body>
 </html>

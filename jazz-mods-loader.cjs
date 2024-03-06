@@ -2,11 +2,12 @@
  * jazz-mods-loader.cjs
  * 
  * Loads all Jazz Modules from the jazzmods directory
- * Copyright (C) 2021-2023, Vishal Verma <vish@slowpoison.net>
+ * Copyright (C) 2021-2024, Vishal Verma <vish@slowpoison.net>
  */
 const Logger = require('./logger.cjs').getLogger();
 const Path = require('path');
 const Fs = require('fs/promises');
+const JazzRef = require('./jazz-ref.cjs');
 
 const JAZZ_MODS_DIR = Path.join(__dirname, "jazzmods");
 
@@ -22,51 +23,61 @@ class JazzModsLoader {
         async (jazzModRef) => JazzModsLoader.#genLoadJazzMod(jazzModRef)));
   }
 
-  static async #genLoadJazzMod(jazzModRef) {
-    if (JazzModsLoader.#mods[jazzModRef] !== undefined) {
-      return JazzModsLoader.#mods[jazzModRef];
+  static async #genLoadJazzMod(jazzModRefOrUrl) {
+    if (typeof jazzModRefOrUrl !== 'string') {
+      return this.#genLoadJazzModFromDefinition(jazzModRefOrUrl);
+    } else {
+      var [modPkg, modClass, modParams] = JazzRef.JazzMod.explodeModRefOrUrl(jazzModRefOrUrl);
+      return this.#genLoadJazzModFromName(modPkg, modClass, modParams);
     }
-
-    var [pkgName, modName] = JazzModsLoader.#pkgAndModNameFromRef(jazzModRef);
-
-    var key = JazzModsLoader.#canonicalModName(pkgName, modName);
-    var mod = require(Path.join(JAZZ_MODS_DIR, pkgName, modName.toLowerCase() + '.jazzmod.cjs'));
-    JazzModsLoader.#mods[key] = new mod(JazzModsLoader.#jazz, jazzModRef);
-
-    Logger.info(`Loaded JazzMod ${key} from ${pkgName}/${modName.toLowerCase()}.jazzmod.cjs`);
-    return JazzModsLoader.#mods[key];
   }
 
-  static getMod(modId) {
-    return JazzModsLoader.#mods[modId];
+  static async #genLoadJazzModFromDefinition(jazzModDef) {
+    var name = jazzModDef.name;
+    if (name == null) {
+      Logger.throwError(`Invalid JazzMod name {jazzModDef}`);
+    }
+
+    var [modPkg, modClass] = JazzRef.JazzMod.explodeModRefOrUrl(name);
+    return this.#genLoadJazzModFromName(modPkg, modClass, jazzModDef.params);
   }
 
-  static #canonicalModName(pkgName, modName) {
-    if (modName.indexOf('/') !== -1) {
-      // remove everything before the last slash
-      modName = modName.substring(0, modName.indexOf('/'));
+  static async #genLoadJazzModFromName(modPkg, modClass, modParams = null) {
+    var jazzModKey = JazzRef.JazzMod.makeRef(modPkg, modClass, modParams);
+    if (JazzModsLoader.#mods[jazzModKey] !== undefined) {
+      return JazzModsLoader.#mods[jazzModKey];
     }
-    return pkgName.concat(`.${modName}`);
+
+    var path = Path.join(JAZZ_MODS_DIR, modPkg, modClass.toLowerCase() + '.jazzmod.cjs');
+    var mod = require(path);
+    var newMod = new mod(this.#jazz, modPkg, modParams);
+    JazzModsLoader.#mods[jazzModKey] = newMod;
+
+    Logger.info(`Loaded JazzMod ${jazzModKey} from ${modPkg}.${modClass.toLowerCase()}.jazzmod.cjs`);
+    return JazzModsLoader.#mods[jazzModKey];
+  }
+
+  static async genModFromUrl(modUrl) {
+    return await JazzModsLoader.genMod(JazzRef.JazzMod.makeRefFromUrl(modUrl));
+  }
+
+  static async genMod(modId) {
+    if (JazzModsLoader.#mods[modId] !== undefined) {
+      return JazzModsLoader.#mods[modId];
+    }
+
+    return await JazzModsLoader.#genLoadJazzMod(modId);
   }
 
   // FIXME chagne to getJazzMod and let the caller call genSvg
-  static async genJazzModSvg(dashId, jazzModRef) {
-    var [pkgName, modName] = JazzModsLoader.#pkgAndModNameFromRef(jazzModRef);
-    var key = JazzModsLoader.#canonicalModName(pkgName, modName);
-    var mod = JazzModsLoader.#mods[key];
+  static async genJazzModSvg(jazzModRef) {
+    var mod = JazzModsLoader.#mods[jazzModRef];
     if (mod === undefined) {
       Logger.error(`JazzMod ${jazzModRef} not found`);
       return;
     }
 
-    return await mod.genSvg(dashId);
-  }
-
-  static #pkgAndModNameFromRef(jazzModRef) {
-    var lastDot = jazzModRef.lastIndexOf('.');
-    return [
-      jazzModRef.substring(0, lastDot),
-      jazzModRef.substring(lastDot + 1)];
+    return await mod.genSvg();
   }
 }
 
